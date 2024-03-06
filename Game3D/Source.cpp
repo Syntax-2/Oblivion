@@ -32,16 +32,16 @@ int main() {
 	map += L"################";
 	map += L"#..............#";
 	map += L"#..............#";
+	map += L"#...#..........#";
 	map += L"#..............#";
 	map += L"#..............#";
+	map += L"#...............";
+	map += L"#...............";
+	map += L"#...............";
+	map += L"#...............";
 	map += L"#..............#";
 	map += L"#..............#";
-	map += L"#..............#";
-	map += L"#..............#";
-	map += L"#..............#";
-	map += L"#..............#";
-	map += L"#..............#";
-	map += L"#..............#";
+	map += L"#.......#......#";
 	map += L"#..............#";
 	map += L"#..............#";
 	map += L"################";
@@ -109,6 +109,21 @@ int main() {
 			int celling = (float)(screenHeight / 2.0) - screenHeight / ((float)distanceToWall);
 			int floor = screenHeight - celling;
 
+
+			short shade = ' ';
+
+			if (distanceToWall <= depth / 4.0f)
+				shade = 0x2588; //full block shade
+			else if (distanceToWall < depth / 3.0f)
+				shade = 0x2593; // medium high shade
+			else if (distanceToWall < depth / 2.0f)
+				shade = 0x2592; // medium shade
+			else if (distanceToWall < depth)
+				shade = 0x2591; // low shade
+			else
+				shade = ' '; // no shade
+
+
 			for (int y = 0; y < screenHeight; y++) 
 			{
 				if (y < celling) 
@@ -117,11 +132,11 @@ int main() {
 				}
 				else if(y > celling && y <= floor)
 				{
-					screen[y * screenWidth + x] = '#';
+					screen[y * screenWidth + x] = shade;
 				}
 				else
-				{
-					screen[y * screenWidth + x] = ' ';
+				{ 
+				 	screen[y * screenWidth + x] = ' ';
 				}
 
 
