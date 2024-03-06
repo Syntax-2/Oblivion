@@ -1,11 +1,12 @@
 #include <iostream>
 #include <Windows.h>
 #include <chrono>
+#include <thread>
 
 using namespace std;
 
-int screenWidth = 120;
-int screenHeight = 40;
+int screenWidth = 90;
+int screenHeight = 30;
 
 float PlayersX = 8.0f;
 float PlayersY = 8.0f;
@@ -20,7 +21,44 @@ float FOVfloat = 3.14159 / 4.0;
 float depth = 16.0f;
 
 
+void Introduction()
+{
+	bool intro = true;
+
+	// INTRODUCTION
+	while (intro)
+	{
+		string s = "The world flickers in shades of grey, a desolate wasteland sculpted by chrome and concrete... Write 'more' to continue...";
+		for (char c : s)
+		{
+			this_thread::sleep_for(chrono::milliseconds(100));
+			cout << c << flush;
+		}
+		
+		int o;
+		cin >> o;
+
+		s = "You are Agent 13, a lone operative tasked with navigating the depths of Oblivion, a labyrinthine complex rumored to hold the key to breaking the city's oppressive monochrome grip. STARTING THE GAME......................";
+		for (char c : s)
+		{
+			this_thread::sleep_for(chrono::milliseconds(100));
+			cout << c << flush;
+		}
+
+		intro = false;
+			
+		return;
+
+	}
+
+}
+
+
+
+
 int main() {
+
+	Introduction();
 
 	wchar_t* screen = new wchar_t[screenWidth * screenHeight];
 	HANDLE hConsole = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
@@ -32,16 +70,16 @@ int main() {
 	map += L"################";
 	map += L"#..............#";
 	map += L"#..............#";
-	map += L"#...#..........#";
 	map += L"#..............#";
 	map += L"#..............#";
-	map += L"#...............";
-	map += L"#...............";
-	map += L"#...............";
-	map += L"#...............";
+	map += L"#..............#";
+	map += L"#..............#";
+	map += L"#..............#";
 	map += L"#..............#";
 	map += L"#..............#";
 	map += L"#.......#......#";
+	map += L"#......###.....#";
+	map += L"#......###.....#";
 	map += L"#..............#";
 	map += L"#..............#";
 	map += L"################";
@@ -49,6 +87,10 @@ int main() {
 
 	auto tp1 = chrono::system_clock::now();
 	auto tp2 = chrono::system_clock::now();
+
+
+
+
 
 	while (true) 
 	{
@@ -77,11 +119,28 @@ int main() {
 		{
 			PlayersX += sinf(PlayersZ) * 5.0f * elapsedTimefloat;
 			PlayersY += cosf(PlayersZ) * 5.0f * elapsedTimefloat;
+
+			if (map[(int)PlayersY * mapWidth + (int)PlayersX] == '#') 
+			{
+				PlayersX -= sinf(PlayersZ) * 5.0f * elapsedTimefloat;
+				PlayersY -= cosf(PlayersZ) * 5.0f * elapsedTimefloat;
+			}
+			
+
+
+
 		}
 		if (GetAsyncKeyState((unsigned short)'S') & 0x8000)
 		{
 			PlayersX -= sinf(PlayersZ) * 5.0f * elapsedTimefloat;
 			PlayersY -= cosf(PlayersZ) * 5.0f * elapsedTimefloat;
+
+			if (map[(int)PlayersY * mapWidth + (int)PlayersX] == '#')
+			{
+				PlayersX += sinf(PlayersZ) * 5.0f * elapsedTimefloat;
+				PlayersY += cosf(PlayersZ) * 5.0f * elapsedTimefloat;
+			}
+
 		}
 
 
@@ -126,33 +185,76 @@ int main() {
 			int floor = screenHeight - celling;
 
 
-			short shade = ' ';
+			//
+			//// WALL SHADING
+			//
+
+			short wshade = ' ';
 
 			if (distanceToWall <= depth / 4.0f)
-				shade = 0x2588; //full block shade
+				wshade = 0x2588; //full block shade
 			else if (distanceToWall < depth / 3.0f)
-				shade = 0x2593; // medium high shade
+				wshade = 0x2593; // medium high shade
 			else if (distanceToWall < depth / 2.0f)
-				shade = 0x2592; // medium shade
+				wshade = 0x2592; // medium shade
 			else if (distanceToWall < depth)
-				shade = 0x2591; // low shade
+				wshade = 0x2591; // low shade
 			else
-				shade = ' '; // no shade
+				wshade = ' '; // no shade
+
+
+			
 
 
 			for (int y = 0; y < screenHeight; y++) 
 			{
 				if (y < celling) 
 				{
+					//
+					//// Celling SHADING
+					//
+
+					short cshade = ' ';
+
+					float b = 1.0f - (((float)y - screenHeight / 2.0f) / ((float)screenHeight / 2.0f));
+					if (b < 0.25)
+						cshade = '#';
+					else if (b < 0.5)
+						cshade = 'x';
+					else if (b < 0.75)
+						cshade = '.';
+					else if (b < 0.9)
+						cshade = '-';
+					else
+						cshade = ' ';
+
 					screen[y * screenWidth + x] = ' ';
 				}
 				else if(y > celling && y <= floor)
 				{
-					screen[y * screenWidth + x] = shade;
+					screen[y * screenWidth + x] = wshade;
 				}
 				else
 				{ 
-				 	screen[y * screenWidth + x] = ' ';
+					//
+					//// FLOOR SHADING
+					//
+
+					short fshade = ' ';
+
+					float b = 1.0f - (((float)y - screenHeight / 2.0f) / ((float)screenHeight / 2.0f));
+					if (b < 0.25)
+						fshade = '#';
+					else if (b < 0.5)
+						fshade = 'x';
+					else if (b < 0.75)
+						fshade = '.';
+					else if (b < 0.9)
+						fshade = '-';
+					else
+						fshade = ' ';
+					
+					screen[y * screenWidth + x] = fshade;
 				}
 
 
@@ -175,3 +277,5 @@ int main() {
 	return 0;
 
 }
+
+
