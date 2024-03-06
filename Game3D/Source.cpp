@@ -58,15 +58,31 @@ int main() {
 		tp1 = tp2;
 		float elapsedTimefloat = elapsedTime.count();
 
+
+		//
+		//// ROTATION
+		//
 		if (GetAsyncKeyState((unsigned short)'A') & 0x8000)
 		{
-			PlayersZ -= 0.1f * elapsedTimefloat;
+			PlayersZ -= 1.0f * elapsedTimefloat;
 		}
 		if (GetAsyncKeyState((unsigned short)'D') & 0x8000)
 		{
-			PlayersZ += 0.1f * elapsedTimefloat;
+			PlayersZ += 1.0f * elapsedTimefloat;
 		}
-
+		//
+		//// MOVEMENT
+		//
+		if (GetAsyncKeyState((unsigned short)'W') & 0x8000)
+		{
+			PlayersX += sinf(PlayersZ) * 5.0f * elapsedTimefloat;
+			PlayersY += cosf(PlayersZ) * 5.0f * elapsedTimefloat;
+		}
+		if (GetAsyncKeyState((unsigned short)'S') & 0x8000)
+		{
+			PlayersX -= sinf(PlayersZ) * 5.0f * elapsedTimefloat;
+			PlayersY -= cosf(PlayersZ) * 5.0f * elapsedTimefloat;
+		}
 
 
 		for (int x = 0; x < screenWidth; x++)
