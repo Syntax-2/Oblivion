@@ -2,6 +2,9 @@
 #include <Windows.h>
 #include <chrono>
 #include <thread>
+#include <mmsystem.h>
+
+#pragma comment(lib, "winmm.lib")
 
 using namespace std;
 
@@ -21,8 +24,18 @@ float FOVfloat = 3.14159 / 4.0;
 float depth = 16.0f;
 
 
+void playMusic() {
+		PlaySound(TEXT("rainSfx.wav"), NULL, SND_FILENAME | SND_ASYNC);
+}
+
+
+
 void Introduction()
 {
+
+	thread musicThread(playMusic);
+	musicThread.join();
+
 	bool intro = true;
 
 	// INTRODUCTION
@@ -38,7 +51,7 @@ void Introduction()
 		int o;
 		cin >> o;
 
-		s = "You are Agent 13, a lone operative tasked with navigating the depths of Oblivion, a labyrinthine complex rumored to hold the key to breaking the city's oppressive monochrome grip. STARTING THE GAME......................";
+		s = "You are Agent 13, a lone operative tasked with navigating the depths of Oblivion, STARTING THE GAME......................";
 		for (char c : s)
 		{
 			this_thread::sleep_for(chrono::milliseconds(100));
@@ -58,6 +71,8 @@ void Introduction()
 
 int main() {
 
+
+
 	Introduction();
 
 	wchar_t* screen = new wchar_t[screenWidth * screenHeight];
@@ -67,21 +82,21 @@ int main() {
 
 	wstring map;
 
-	map += L"################";
-	map += L"#..............#";
-	map += L"#..............#";
-	map += L"#..............#";
-	map += L"#..............#";
-	map += L"#..............#";
-	map += L"#..............#";
-	map += L"#..............#";
-	map += L"#..............#";
-	map += L"#..............#";
-	map += L"#.......#......#";
-	map += L"#......###.....#";
-	map += L"#......###.....#";
-	map += L"#..............#";
-	map += L"#..............#";
+	map += L"#####..#########";
+	map += L"#......#.......#";
+	map += L"#...#..#..##...#";
+	map += L"#...####...#...#";
+	map += L"#...##.....#...#";
+	map += L"#...########...#";
+	map += L"#...#..........#";
+	map += L"#...#..........#";
+	map += L"#.##########...#";
+	map += L"#.#........#...#";
+	map += L"#.#........#...#";
+	map += L"#.#...#....#...#";
+	map += L"#.#...#....#...#";
+	map += L"#.....#........#";
+	map += L"#.....#........#";
 	map += L"################";
 
 
